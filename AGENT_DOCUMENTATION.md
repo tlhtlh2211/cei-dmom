@@ -320,4 +320,45 @@ System Dynamics:
 ### **Output:** Real-time dashboards, time-series data, spatial visualizations
 ### **Performance:** Optimized with 10% population sampling for responsiveness
 
+---
+
+## 📋 Current Model Features
+
+### **Population Flow System**
+```mermaid
+graph LR
+    A[Born] -->|Age 0-5| B[Children U5]
+    B -->|Age 5| C[Youth 5-15] 
+    C -->|Age 15, Female| D[Maternal Agent]
+    C -->|Age 15, Male| E[Exit Model]
+    D -->|Age 50| E
+```
+
+### **Age Distribution**
+- **Maternal agents**: Gaussian distribution centered at 27 years (σ=6)
+- **Child agents**: Gaussian distribution centered at 30 months (σ=18)
+- **Natural aging**: Monthly progression with lifecycle transitions
+
+### **Population Parameters**
+```yaml
+Pregnancy rate: 0.15% weekly
+Birth spacing: Minimum 52 weeks
+Max children: 3 per mother
+Child transitions: Ages 5 and 15
+Maternal exit: Age 50
+```
+
+### **Monitoring System**
+- Real-time population tracking with dead agent exclusion
+- Transition flow monitoring (births, aging, exits)
+- Health outcome metrics (ANC, immunization, births)
+- Intervention effectiveness tracking
+
+### **File Structure**
+- **Primary**: `CEI-Simulation/models/dien-bien-abm.gaml`
+- **Parallel**: `CEI-Simulation/models/thai-nguyen-abm.gaml`
+- Both models use identical logic with province-specific parameters
+
+---
+
 **This ABM represents a comprehensive digital laboratory for Vietnamese health policy experimentation, combining real demographic data with evidence-based behavioral modeling to support data-driven health system planning.** 🇻🇳 
