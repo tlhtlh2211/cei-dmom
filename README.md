@@ -27,15 +27,6 @@ python run_simulation.py
 - **Interventions**: Mobile app, SMS, CHW visits, incentives
 - **10% Sampling**: Efficient simulation showing realistic population patterns
 
-## 📈 Sample Results
-
-| Intervention | ANC Coverage | Child Immunization |
-|-------------|--------------|-------------------|
-| Baseline    | 42.6%        | 65.4%            |
-| Mobile App  | 69.1%        | 78.2%            |
-| CHW Visits  | 77.9%        | 84.6%            |
-| Combined    | 87.1%        | 91.3%            |
-
 ## 🏗️ Structure
 
 ```
