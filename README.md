@@ -49,6 +49,7 @@ python run_simulation.py
 | $sms_i$ | received_sms for agent $i$ (boolean) |
 | $chw_i$ | chw_contacted for agent $i$ (boolean) |
 | $mobile_i$ | mobile_access for agent $i$ (boolean) |
+| $week^t$ | current simulation week at time $t$ |
 | $I_{type}^t$ | intervention indicator (1 if active, 0 if not) |
 | $\mathbb{1}(condition)$ | indicator function (1 if true, 0 if false) |
 
@@ -63,7 +64,7 @@ $$S_i^{t+1} = f(S_i^t, age_i^t, wp_i^t, lit_i, pov_i, dist_i, interventions^t)$$
 $$P(Maternal \rightarrow Pregnant) = 0.0015 \times fertility_i^t$$
 
 Where $fertility_i^t = 1$ if all conditions met, $0$ otherwise:
-- $(current\_week - last\_birth_i) > 52$ (1-year spacing)
+- $(week^t - last\_birth_i) > 52$ (1-year spacing)
 - $children_i < 3$ (max children limit)  
 - $age_i^t < 45$ (fertility age limit)
 
@@ -93,7 +94,7 @@ $$P(S_i^{t+1} = Exit \mid age_i^t \geq 50) = 1$$
 $$S_j^{t+1} = g(S_j^t, am_j^t, gen_j, lit_{m_j}, pov_{m_j}, interventions^t)$$
 
 #### A. Age Progression (Monthly)
-$$am_j^{t+1} = am_j^t + 1 \quad \text{if } (current\_week \bmod 4 = 0)$$
+$$am_j^{t+1} = am_j^t + 1 \quad \text{if } (week^t \bmod 4 = 0)$$
 
 #### B. Child U5 → Youth Transition
 $$P(Child\_U5 \rightarrow Youth \mid am_j^t = 60) = 1$$

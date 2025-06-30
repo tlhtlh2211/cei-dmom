@@ -10,7 +10,7 @@ global {
     float child_sampling_rate <- 0.1;    
     
     // Behavioral parameters (calibrated for Vietnamese context)
-    float base_pregnancy_rate <- 0.0015;  // 0.15% weekly chance (sustainable demographics)
+    float base_pregnancy_rate <- 0.002;  // 0.2% weekly chance (sustainable demographics)
     float mobile_penetration <- 0.65;     // 65% mobile access in rural areas
     
     // Health outcome counters (reset weekly)
@@ -957,7 +957,7 @@ experiment "Main Simulation" type: gui {
         	}
         }
         
-        
+       
         display "Population Sampling Validation" {
             chart "Full Population Validation (1:1 Matching)" type: series {
                 data "GSO Target Children U5" value: 67765 color: #blue;
@@ -984,30 +984,6 @@ experiment "Main Simulation" type: gui {
                 data "Pregnant" value: length(MaternalAgent where (!dead(each) and each.is_pregnant)) color: #red;
                 data "Children U5" value: length(ChildAgent where (!dead(each) and each.age_months < 60)) color: #orange;
                 data "Youth 5-15" value: length(ChildAgent where (!dead(each) and each.age_months >= 60)) color: #purple;
-            }
-        }
-        
-        display "Maternal Age Distribution" {
-            chart "Maternal Agents by Age Group" type: histogram {
-                data "15-19" value: length(MaternalAgent where (!dead(each) and each.age >= 15 and each.age <= 19)) color: #red;
-                data "20-24" value: length(MaternalAgent where (!dead(each) and each.age >= 20 and each.age <= 24)) color: #orange;
-                data "25-29" value: length(MaternalAgent where (!dead(each) and each.age >= 25 and each.age <= 29)) color: #yellow;
-                data "30-34" value: length(MaternalAgent where (!dead(each) and each.age >= 30 and each.age <= 34)) color: #green;
-                data "35-39" value: length(MaternalAgent where (!dead(each) and each.age >= 35 and each.age <= 39)) color: #blue;
-                data "40-44" value: length(MaternalAgent where (!dead(each) and each.age >= 40 and each.age <= 44)) color: #purple;
-                data "45-49" value: length(MaternalAgent where (!dead(each) and each.age >= 45 and each.age <= 49)) color: #pink;
-            }
-        }
-        
-        display "Child Age Distribution" {
-            chart "Children by Age Group" type: histogram {
-                data "0-11m" value: length(ChildAgent where (!dead(each) and each.age_months >= 0 and each.age_months <= 11)) color: #red;
-                data "12-23m" value: length(ChildAgent where (!dead(each) and each.age_months >= 12 and each.age_months <= 23)) color: #orange;
-                data "24-35m" value: length(ChildAgent where (!dead(each) and each.age_months >= 24 and each.age_months <= 35)) color: #yellow;
-                data "36-47m" value: length(ChildAgent where (!dead(each) and each.age_months >= 36 and each.age_months <= 47)) color: #green;
-                data "48-59m" value: length(ChildAgent where (!dead(each) and each.age_months >= 48 and each.age_months <= 59)) color: #blue;
-                data "Youth 5-10y" value: length(ChildAgent where (!dead(each) and each.age_months >= 60 and each.age_months <= 119)) color: #purple;
-                data "Youth 10-15y" value: length(ChildAgent where (!dead(each) and each.age_months >= 120 and each.age_months <= 179)) color: #pink;
             }
         }
        
