@@ -27,112 +27,99 @@ python run_simulation.py
 - **Interventions**: Mobile app, SMS, CHW visits, incentives
 - **10% Sampling**: Efficient simulation showing realistic population patterns
 
-## 🔬 Agent State Transition Formulas
+## 🔬 Agent Behavior (Simplified)
 
-### Variable Notation
+> **For detailed mathematical formulas**, see the GAML model files or technical documentation.
 
-| Variable | Description |
-|----------|-------------|
-| $wp_i^t$ | weeks_pregnant for agent $i$ at time $t$ |
-| $lit_i$ | literacy_level for agent $i$ (0.0-1.0) |
-| $pov_i$ | poverty_level for agent $i$ (0.0-1.0) |
-| $dist_i$ | distance_to_facility for agent $i$ |
-| $age_i^t$ | age for agent $i$ at time $t$ |
-| $anc_i^t$ | anc_visits for agent $i$ at time $t$ |
-| $app_i^t$ | app_engagement for agent $i$ at time $t$ |
-| $eth_i$ | ethnicity_factor for agent $i$ |
-| $am_j^t$ | age_months for child $j$ at time $t$ |
-| $gen_j$ | gender for child $j$ |
-| $lit_{m_j}$ | literacy_level of mother of child $j$ |
-| $pov_{m_j}$ | poverty_level of mother of child $j$ |
-| $app_{m_j}$ | app_engagement of mother of child $j$ |
-| $sms_i$ | received_sms for agent $i$ (boolean) |
-| $chw_i$ | chw_contacted for agent $i$ (boolean) |
-| $mobile_i$ | mobile_access for agent $i$ (boolean) |
-| $week^t$ | current simulation week at time $t$ |
-| $I_{type}^t$ | intervention indicator (1 if active, 0 if not) |
-| $\mathbb{1}(condition)$ | indicator function (1 if true, 0 if false) |
+### Key Variables
+- **weeks_pregnant_i**: Number of weeks agent i has been pregnant
+- **literacy_i**: Literacy level for agent i (0.0-1.0)  
+- **poverty_i**: Poverty level for agent i (0.0-1.0)
+- **distance_i**: Distance to health facility for agent i
+- **age_i**: Age of agent i
+- **anc_visits_i**: Number of ANC visits for agent i
+- **ethnicity_i**: Ethnicity factor (0.1 for non-Kinh, 0 for Kinh)
+- **current_week**: Current simulation week
+- **intervention_boost**: Effects from app, SMS, CHW, incentives
 
 ### 1. MaternalAgent State Transitions
 
 **State Space:** $S_i^t \in \{Maternal, Pregnant, Exit\}$
 
 **General Transition Formula:**
-$$S_i^{t+1} = f(S_i^t, age_i^t, wp_i^t, lit_i, pov_i, dist_i, interventions^t)$$
+```
+S_i(t+1) = f(S_i(t), age_i, weeks_pregnant_i, literacy_i, poverty_i, distance_i, interventions)
+```
 
 #### A. Maternal → Pregnant Transition
-$$P(Maternal \rightarrow Pregnant) = 0.0015 \times fertility_i^t$$
+```
+P(Maternal → Pregnant) = 0.0015 × fertility_constraints_i
+```
 
-Where $fertility_i^t = 1$ if all conditions met, $0$ otherwise:
-- $(week^t - last\_birth_i) > 52$ (1-year spacing)
-- $children_i < 3$ (max children limit)  
-- $age_i^t < 45$ (fertility age limit)
+Where fertility_constraints_i = 1 if all conditions met, 0 otherwise:
+- (current_week - weeks_since_last_birth_i) > 52 (1-year spacing)
+- total_children_i < 3 (max children limit)  
+- age_i < 45 (fertility age limit)
 
 #### B. Care-Seeking Threshold
-$$threshold_i = \max(0.1, \min(0.9, 0.5 - 0.2 \times lit_i + 0.15 \times pov_i + 0.1 \times \min(dist_i/10, 0.3) + eth_i))$$
+```
+threshold_i = max(0.1, min(0.9, 0.5 - 0.2×literacy_i + 0.15×poverty_i + 0.1×distance_i/10 + ethnicity_i))
+```
 
-Where: $eth_i = 0.1$ if ethnicity ≠ "Kinh", else $0$
-
-#### C. ANC Care-Seeking Probability
-$$P(seek\_ANC_i^t) = [\min(0.95, base_i^t + 0.3 \times lit_i + boost_i^t)] \times [1 - threshold_i]$$
+#### C. ANC Care-Seeking Probability  
+```
+P(seek_ANC_i) = [min(0.95, base_prob_i + 0.3×literacy_i + intervention_boost_i)] × [1 - threshold_i]
+```
 
 Where:
-- $base_i^t = \min(0.8, 0.1 + 0.02 \times wp_i^t)$
-- $boost_i^t = 0.2 \times I_{app}^t \times \mathbb{1}(app_i^t > 0.5) + 0.15 \times I_{sms}^t \times sms_i + 0.25 \times I_{chw}^t \times chw_i + 0.3 \times I_{incentives}^t \times \mathbb{1}(pov_i > 0.6)$
+- base_prob_i = min(0.8, 0.1 + 0.02×weeks_pregnant_i)
+- intervention_boost_i = intervention effects from apps, SMS, CHW visits, incentives
 
 #### D. Skilled Birth Probability
-$$P(skilled\_birth_i) = \max(0.1, \min(0.95, 0.4 + 0.1 \times anc_i^t + 0.2 \times lit_i - 0.15 \times pov_i - 0.05 \times \min(dist_i/5, 0.4)))$$
+```
+P(skilled_birth_i) = max(0.1, min(0.95, 0.4 + 0.1×anc_visits_i + 0.2×literacy_i - 0.15×poverty_i - 0.05×distance_i/5))
+```
 
-#### E. Aging Transition (Maternal/Pregnant → Exit)
-$$P(S_i^{t+1} = Exit \mid age_i^t \geq 50) = 1$$
+#### E. Aging Transition  
+```
+P(Maternal/Pregnant → Exit | age_i ≥ 50) = 1
+```
 
 ### 2. ChildAgent State Transitions
 
-**State Space:** $S_j^t \in \{Child\_U5, Youth\_5\_15, Maternal, Exit\}$
-
-**General Transition Formula:**
-$$S_j^{t+1} = g(S_j^t, am_j^t, gen_j, lit_{m_j}, pov_{m_j}, interventions^t)$$
-
 #### A. Age Progression (Monthly)
-$$am_j^{t+1} = am_j^t + 1 \quad \text{if } (week^t \bmod 4 = 0)$$
+```
+age_months_j(t+1) = age_months_j(t) + 1    if (current_week mod 4 = 0)
+```
 
-#### B. Child U5 → Youth Transition
-$$P(Child\_U5 \rightarrow Youth \mid am_j^t = 60) = 1$$
+#### B. Transitions by Age
+- **Child U5 → Youth**: at age_months_j = 60 (age 5)
+- **Youth → Maternal** (females): at age_months_j ≥ 180 (age 15)  
+- **Youth → Exit** (males): at age_months_j ≥ 180 (age 15)
 
-#### C. Youth → Maternal/Exit Transition
-$$P(Youth \rightarrow Maternal \mid am_j^t \geq 180, gen_j = \text{"female"}) = 1$$
-$$P(Youth \rightarrow Exit \mid am_j^t \geq 180, gen_j = \text{"male"}) = 1$$
-
-#### D. Child Immunization Probability
-$$P(immunization_j^t) = \max(0.05, \min(0.9, 0.3 + 0.2 \times lit_{m_j} - 0.1 \times pov_{m_j} + boost_j^t))$$
+#### C. Child Immunization Probability
+```
+P(receive_immunization_j) = max(0.05, min(0.9, 0.3 + 0.2×literacy_mother_j - 0.1×poverty_mother_j + intervention_boost_j))
+```
 
 Where:
-$$boost_j^t = 0.15 \times I_{app}^t \times \mathbb{1}(app_{m_j} > 0.4) + 0.25 \times I_{incentives}^t \times \mathbb{1}(pov_{m_j} > 0.5)$$
+- literacy_mother_j, poverty_mother_j = mother's characteristics
+- intervention_boost_j = effects from app engagement, incentives
 
-### 3. Commune-Level Environmental Dynamics
-
-**Formula:**
-$$env^{t+1} = h(real\_data^t, indicators^t, interventions^t)$$
-
-**Real Data Integration:**
-$$lit\_commune^t = GSO\_literacy(\text{"Dien\_Bien"}, year^t) + variation$$
-$$pov\_commune^t = MOLISA\_poverty(\text{"Dien\_Bien"}, year^t) + variation$$
-
-### 4. Intervention Effect Modifiers
-
-**Digital App Engagement:**
-$$app_i^{t+1} = f(mobile_i, lit_i, age_i^t, I_{app}^t)$$
-
-**Community Health Worker Contact:**
-$$P(chw_i^t) = f(chw\_deployment^t, dist_i, pov_i)$$
-
-### 5. Population Dynamics
-
-**Birth Rate (Weekly):**
-$$births^t = \sum_i P(birth_i^t \mid wp_i^t \geq 40)$$
+### 3. Key Model Dynamics
 
 **Population Flow:**
-$$Pop^{t+1} = Pop^t + births^t - aged\_out^t - exits^t$$
+$$Pop(t+1) = Pop(t) + births(t) - exits(t)$$
+
+**Real Data Integration:**
+- Literacy/poverty rates updated from Vietnamese government data (GSO/MOLISA)
+- Commune demographics change over time (2019-2024)
+
+**Intervention Effects:**
+- **Mobile app**: +20% ANC care-seeking (if engaged)
+- **SMS outreach**: +15% ANC care-seeking  
+- **CHW visits**: +25% ANC care-seeking
+- **Incentives**: +30% care-seeking (for poor households)
 
 ### Key Model Parameters
 
