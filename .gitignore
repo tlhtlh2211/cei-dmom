@@ -56,7 +56,6 @@ venv.bak/
 
 # Generated simulation results
 *.csv
-*.png
 *.pdf
 *.xlsx
 *.xls
