@@ -16,33 +16,55 @@ gdf_vn = gpd.read_file('/Users/tranlehai/Desktop/CEI-Simulation/vietnam-plot/vie
 # Simplify geometries to remove holes and prevent Bokeh warnings
 gdf_vn.geometry = gdf_vn.geometry.buffer(0)
 
-vn_data = gdf_vn.merge(data[['Name', 'plot_data']], on='Name', how='left')
-plot_data = json.dumps(json.loads(vn_data.to_json()))
+vn_data = gdf_vn.merge(data[['Name', 'plot_data', 'Ready']], on='Name', how='left')
+vn_data['Ready'].fillna(False, inplace=True)
 
-geosource = GeoJSONDataSource(geojson=plot_data)
-palette = brewer['Blues'][8][::-1]
-high_val = np.ceil(data.plot_data.max())
-color_mapper = LinearColorMapper(palette=palette, low=0, high=high_val)
+# Split the data into ready and not ready provinces
+ready_gdf = vn_data[vn_data['Ready'] == True]
+not_ready_gdf = vn_data[vn_data['Ready'] == False]
 
-# Dynamically generate tick labels for the color bar.
-# This creates clear, evenly spaced labels based on the data's range.
-step = 1
-if high_val > 10:
-    # If the range is large, increase the step size to avoid crowded labels
-    step = int(np.ceil(high_val / 5))
-    
-ticks = range(0, int(high_val) + 1, step)
-tick_labels = {str(tick): str(tick) for tick in ticks}
+# Create separate GeoJSON sources for plotting
+ready_source = GeoJSONDataSource(geojson=ready_gdf.to_json())
+not_ready_source = GeoJSONDataSource(geojson=not_ready_gdf.to_json())
 
-color_bar = ColorBar(
-    color_mapper=color_mapper, 
+# --- Blue Color Mapper for 'Ready' Provinces ---
+# We slice and reverse the palette to ensure higher values get darker colors.
+palette_blue = brewer['Blues'][7][:4][::-1]
+blue_color_mapper = LinearColorMapper(palette=palette_blue, low=80, high=100)
+
+ticks_blue = list(range(80, 101, 4))
+tick_labels_blue = {str(tick): str(tick) for tick in ticks_blue}
+
+blue_color_bar = ColorBar(
+    color_mapper=blue_color_mapper,
     label_standoff=8,
     width=850, 
     height=20,
     border_line_color=None, 
-    location = (0,0), 
-    orientation = 'horizontal', 
-    major_label_overrides = tick_labels
+    location=(0,0), 
+    orientation='horizontal', 
+    major_label_overrides=tick_labels_blue,
+    title="Ready"
+)
+
+# --- Red Color Mapper for 'Not Ready' Provinces ---
+# Slicing and reversing the palette for consistency with the blue scale.
+palette_red = brewer['Reds'][7][:4][2:]
+red_color_mapper = LinearColorMapper(palette=palette_red, low=60, high=80)
+
+ticks_red = list(range(60, 81, 4))
+tick_labels_red = {str(tick): str(tick) for tick in ticks_red}
+
+red_color_bar = ColorBar(
+    color_mapper=red_color_mapper,
+    label_standoff=8,
+    width=850, 
+    height=20,
+    border_line_color=None, 
+    location=(0,0), 
+    orientation='horizontal', 
+    major_label_overrides=tick_labels_red,
+    title="Not Ready"
 )
 
 datestr = datetime.datetime.now().strftime("%d/%m/%Y")
@@ -70,17 +92,30 @@ p.yaxis.axis_label_text_font_size = "14pt"
 p.yaxis.major_label_text_font_size = "12pt"
 p.xaxis.major_label_text_font_size = "12pt"
 
+# Plot 'not ready' provinces in red with intensity
 p.patches(
     xs='xs',
     ys='ys', 
-    source=geosource,
-    fill_color = {'field' :'plot_data', 'transform' : color_mapper}, # plot_data là field dùng để  quy định độ đậm nhạt màu tô
-    line_color = 'black', 
-    line_width = 0.25, 
-    fill_alpha = 1
+    source=not_ready_source,
+    fill_color={'field' :'plot_data', 'transform' : red_color_mapper},
+    line_color='black', 
+    line_width=0.25, 
+    fill_alpha=1
 )
 
-p.add_layout(color_bar, 'below')
+# Plot 'ready' provinces in blue with intensity
+p.patches(
+    xs='xs',
+    ys='ys', 
+    source=ready_source,
+    fill_color={'field' :'plot_data', 'transform' : blue_color_mapper},
+    line_color='black', 
+    line_width=0.25, 
+    fill_alpha=1
+)
+
+p.add_layout(blue_color_bar, 'below')
+p.add_layout(red_color_bar, 'above')
 
 from bokeh.io import export_png
 export_png(p, filename=f"pci_vn_{datetime.datetime.now().strftime('%Y-%m-%d')}.png")
