@@ -217,7 +217,7 @@ class NationalUpscalingCalculator:
         Calculate Province-level Composite Index according to Formula (11):
         PCI_p = (U_p* + G_p* + Y_p*) / 3
         """
-        return (U_p_star + G_p_star + Y_p_star) / 3
+        return (1 * U_p_star + 1 * G_p_star + 1 * Y_p_star) / 3
     
     def generate_synthetic_province_data(self):
         """Generate realistic data for 61 synthetic provinces using actual names."""
@@ -521,8 +521,8 @@ class NationalUpscalingCalculator:
         
         # Save province-level results
         df = pd.DataFrame(self.province_results)
-        df.to_csv(output_dir / 'national_pci_analysis_with_names.csv', index=False)
-        print(f"Saved: {output_dir / 'national_pci_analysis_with_names.csv'}")
+        df.to_csv(output_dir / 'national_pci_analysis_with_names_new.csv', index=False)
+        print(f"Saved: {output_dir / 'national_pci_analysis_with_names_new.csv'}")
         
         # Save national summary
         summary = {

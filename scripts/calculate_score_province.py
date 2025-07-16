@@ -398,7 +398,7 @@ class DCIPUCCalculator:
             df = self.normalized_indicators[province].copy()
             
             # Equation (4): DCId = (C*d + W*d + I*d + P*d + L*d) / 5
-            df['DCI'] = (df['C_star'] + df['W_star'] + df['I_star'] + df['P_star'] + df['L_star']) / 5
+            df['DCI'] = (0.15 * df['C_star'] + 0.15 * df['W_star'] + 0.25 * df['I_star'] + 0.25 * df['P_star'] + 0.2 * df['L_star'])
             
             # Equation (5): District readiness check DCId ≥ DCIthreshold
             df['ready'] = df['DCI'] >= self.DCI_threshold

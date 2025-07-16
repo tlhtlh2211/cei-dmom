@@ -9,7 +9,11 @@ from bokeh.models import GeoJSONDataSource, LinearColorMapper, ColorBar
 from bokeh.palettes import brewer
 from bokeh.models.annotations import Title
 
-data = pd.read_csv("/Users/tranlehai/Desktop/CEI-Simulation/results/national_pci_analysis_with_names.csv")
+data = pd.read_csv("/Users/tranlehai/Desktop/CEI-Simulation/results/national_pci_analysis_with_names_new.csv")
+data2 = pd.read_csv("/Users/tranlehai/Desktop/CEI-Simulation/results/national_pci_analysis_with_names.csv")
+data['Province'] = data2['Name']
+data.rename(columns={'Province': 'Name'}, inplace=True)
+
 data["plot_data"] = data["PCI"]
 gdf_vn = gpd.read_file('/Users/tranlehai/Desktop/CEI-Simulation/vietnam-plot/vietnam_provinces.geojson')
 
