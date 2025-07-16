@@ -10,10 +10,10 @@ from bokeh.models.annotations import Title
 
 # --- Configuration ---
 # Change these variables to plot a different province
-PROVINCE_NAME = 'Điện Biên'
+PROVINCE_NAME = 'Thái Nguyên'
 # To plot Thai Nguyen, change the following line to:
 # CSV_PATH = 'results/dci_results_thai_nguyen_target_based.csv'
-CSV_PATH = 'results/dci_results_dien_bien_target_based.csv'
+CSV_PATH = 'results/dci_results_thai_nguyen_target_based.csv'
 
 # --- Load Data ---
 data = pd.read_csv(CSV_PATH)
@@ -86,7 +86,7 @@ red_color_bar = ColorBar(
 
 # --- Create Plot ---
 p = figure(
-    title=f"DCI Results for {PROVINCE_NAME}",
+    title="",
     plot_height=800, plot_width=700,
     toolbar_location=None,
     tools="pan,wheel_zoom,box_zoom,reset"

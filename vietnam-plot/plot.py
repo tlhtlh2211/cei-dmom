@@ -71,15 +71,8 @@ red_color_bar = ColorBar(
     title="Not Ready"
 )
 
-datestr = datetime.datetime.now().strftime("%d/%m/%Y")
-title = Title()
-# Tùy theo giá trị muốn vẽ mà thay đổi tiêu đề cho phù hợp
-title.text = f"Vietnam PCI Index - {datestr}"
-title.text_font_size = '16pt'
-title.align = "center"
 
-p = figure(
-    title=title, 
+p = figure( 
     title_location='above',
     plot_height=1000 , 
     plot_width=900, 
@@ -89,9 +82,9 @@ p = figure(
 # tinh chỉnh một số thuộc tính của hai trục
 p.xgrid.grid_line_color = None
 p.ygrid.grid_line_color = None
-p.xaxis.axis_label = 'Kinh độ (longitude)'
+p.xaxis.axis_label = 'longitude'
 p.xaxis.axis_label_text_font_size = "14pt"
-p.yaxis.axis_label = 'Vĩ độ (latitude)'
+p.yaxis.axis_label = 'latitude'
 p.yaxis.axis_label_text_font_size = "14pt"
 p.yaxis.major_label_text_font_size = "12pt"
 p.xaxis.major_label_text_font_size = "12pt"
