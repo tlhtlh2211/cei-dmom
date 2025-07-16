@@ -107,3 +107,52 @@ District Analysis (Absolute Numbers):
 |Lai Chau            |Lai Châu             |88.6201304631602 |10.899398546113261|4721.186401855534 |88.6201304631602 |100.0            |62.94915202474046 |83.85642749596688|True |Synthetic|                 |               |               |
 |Cao Bang            |Cao Bằng             |80.06655064242392|7.441596828492563 |4463.261068362683 |80.06655064242392|93.01996035615704|59.510147578169104|77.53221952558336|False|Synthetic|                 |               |               |
 |Bắc Kạn             |Bắc Kạn              |89.24913351419592|8.468120417641464 |5783.221713632868 |89.24913351419592|100.0            |77.10962284843824 |88.78625212087805|True |Synthetic|                 |               |               |
+
+# CHART EXPLANATION
+
+![Agent Chart](agent.png)
+
+This diagram displays an agent-based model simulating maternal and child health dynamics. It tracks agents representing districts, mothers, pregnant women, and children. The simulation includes key processes like childbirth, immunization, antenatal care (ANC), and aging, along with population generation and exit criteria.
+
+### Agent Descriptions:
+*   **District Agent:** Initializes the simulation by generating the initial populations of `Maternal` and `Child` agents according to an age distribution. It also triggers immunization checks for children every six months.
+*   **Maternal Agent:** Represents a woman of child-bearing age (15-49). Females over 15 transition from `Child Agent` to this state. They have a weekly probability of becoming pregnant. At age 49, they exit the simulation.
+*   **Pregnant Agent:** A `Maternal Agent` who is pregnant for 40 weeks. During pregnancy, they may seek Antenatal Care (ANC). Upon giving birth, they create a new `Child Agent` and return to the `Maternal Agent` state.
+*   **Child Agent:** Represents a child. They are either generated at the start or born from a `Pregnant Agent`. They are prompted to seek immunizations periodically. At age 15, females become `Maternal Agents`, and males exit the simulation.
+
+## Population Dynamics Over Time
+
+![Population Chart](population.png)
+
+This chart illustrates the population dynamics over time. The maternal agent population (blue line, ages 15-49) shows a steady increase from approximately 1,550 to 1,800, while the youth population (purple line, ages 5-15) experiences robust growth from around 350 to nearly 950. In contrast, the young child population (orange line, ages 0-4) remains relatively stable, fluctuating between 400 and 500 after an initial decrease. Overall, the simulation indicates a growing population, driven by the expansion of the youth and maternal agent groups while the number of young children stays relatively constant.
+
+## Health Service Utilization
+
+![Health Chart](health.png)
+
+This chart displays trends in key health services over time.
+
+*   **Immunizations (Orange):** Immunization rates are characterized by periodic, sharp spikes, with numbers often exceeding 30-40, followed by periods of low activity. This pattern suggests that immunizations are conducted in large-scale campaigns every six months, as described in the agent diagram.
+*   **ANC Visits (Blue):** Antenatal care visits show consistent but variable activity, typically ranging from 0 to 12 visits per time step. The number of visits is consistently higher than pregnancies, reflecting multiple check-ups per pregnancy.
+*   **Pregnancies (Red):** The number of new pregnancies remains stable and low, generally fluctuating between 0 and 5 per time step.
+*   **Births and Skilled Births (Green):** The rates of births and skilled births are identical, indicating that all deliveries are attended by skilled personnel. The numbers are similar to pregnancies, fluctuating between 0 and 6 per time step.
+
+## Simulation Dashboard and Parameters
+
+![Dashboard](dashboard.png)
+
+This image displays the simulation's control panel and monitoring outputs for a specific run, configured as defined in the `district-level-abm.gaml` file.
+
+### Configuration:
+*   **Location:** The simulation is targeted at the **Dien Bien Phu** district within the **Dien Bien** province.
+*   **Sampling:** A **10%** population sampling rate (`user_sampling_rate`) is used to generate the agent populations from real demographic data.
+*   **Interventions:** All digital health interventions (Mobile App, SMS, CHW Visits, Incentives) are disabled for this run.
+
+### Simulation State and Key Outputs:
+The monitor values capture the simulation at its conclusion in the year **2030**, after completing a full 11-year run (from 2019).
+*   **Predicted Maternal Population:** 1,774 agents.
+*   **Predicted Youth (5-15) Population:** 961 agents.
+*   **Average ANC Visits:** 1.55, calculated across all maternal agents.
+*   **Validation Status:** The system is in "Prediction Mode" because the current year (2030) is beyond the range of available actual data (2019-2024). Consequently, the maternal and child accuracy percentages are displayed as 0.
+
+
