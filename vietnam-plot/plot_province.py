@@ -10,10 +10,10 @@ from bokeh.models.annotations import Title
 
 # --- Configuration ---
 # Change these variables to plot a different province
-PROVINCE_NAME = 'Thái Nguyên'
+PROVINCE_NAME = 'Điện Biên'
 # To plot Thai Nguyen, change the following line to:
 # CSV_PATH = 'results/dci_results_thai_nguyen_target_based.csv'
-CSV_PATH = 'results/dci_results_thai_nguyen_target_based.csv'
+CSV_PATH = 'results/dci_results_dien_bien_target_based.csv'
 
 # --- Load Data ---
 data = pd.read_csv(CSV_PATH)
@@ -56,7 +56,7 @@ not_ready_source = GeoJSONDataSource(geojson=not_ready_gdf.to_json())
 # --- Blue Color Mapper for 'Ready' Districts ---
 # We slice the palette to remove the lightest colors, so the scale starts from a more visible blue.
 # We also reverse it to ensure higher values get darker colors.
-palette_blue = brewer['Greens'][7][:4][::-1]
+palette_blue = brewer['Greens'][7][:5][::-1]
 blue_color_mapper = LinearColorMapper(palette=palette_blue, low=75, high=100)
 
 ticks_blue = list(range(75, 101, 5))
@@ -71,7 +71,7 @@ blue_color_bar = ColorBar(
 
 # --- Red Color Mapper for 'Not Ready' Districts ---
 # Slicing and reversing the palette for consistency with the blue scale.
-palette_red = brewer['YlOrRd'][7][:4]
+palette_red = brewer['YlOrRd'][7][:5]
 red_color_mapper = LinearColorMapper(palette=palette_red, low=50, high=75)
 
 ticks_red = list(range(50, 76, 5))
