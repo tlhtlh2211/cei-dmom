@@ -86,10 +86,11 @@ red_color_bar = ColorBar(
 
 # --- Create Plot ---
 p = figure(
-    title="",
-    plot_height=800, plot_width=700,
-    toolbar_location=None,
-    tools="pan,wheel_zoom,box_zoom,reset"
+    title_location='above',
+    height=600,
+    width=1000,
+    toolbar_location=None
+    # sizing_mode="scale_width"  # REMOVE or comment this out
 )
 p.title.text_font_size = '16pt'
 p.title.align = "center"
